@@ -1,0 +1,17 @@
+{
+  "name": "crypto-talks-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Crypto Talks",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "form-data": "^4.0.4",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.7.0"
+  }
+}
