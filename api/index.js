@@ -17,7 +17,17 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Health check endpoint
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Crypto Talks API is running!',
+    endpoints: {
+      upload: '/api/upload (POST)'
+    }
+  });
+});
+
+// Health check endpoint (alias)
 app.get('/api', (req, res) => {
   res.json({ 
     message: 'Crypto Talks API is running!',
@@ -88,5 +98,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Export the Express app for Vercel
+// Export for Vercel serverless functions
 module.exports = app;
