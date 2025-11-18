@@ -19,14 +19,13 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// CORS Middleware - THIS IS THE FIX
+// CORS Middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://crypto-talks.web.app');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
   
-  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -75,6 +74,19 @@ async function verifyAdmin(req, res, next) {
     return res.status(403).json({ error: 'Forbidden' });
   }
 }
+
+// NEW: Get Firebase config endpoint (only public keys)
+app.get('/api/firebase-config', (req, res) => {
+  res.json({
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  });
+});
 
 // Upload endpoint
 app.post('/api/upload', verifyAuth, upload.single('file'), async (req, res) => {
@@ -133,6 +145,9 @@ app.post('/api/posts', verifyAuth, verifyAdmin, async (req, res) => {
       authorId: req.user.uid,
       likes: 0,
       likedBy: [],
+      views: 0,
+      authenticatedViews: 0,
+      unauthenticatedViews: 0,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
@@ -171,7 +186,6 @@ app.put('/api/posts/:postId', verifyAuth, verifyAdmin, async (req, res) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    // Only update imageCID if a new one is provided
     if (imageCID) {
       updateData.imageCID = imageCID;
     }
