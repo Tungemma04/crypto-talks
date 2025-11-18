@@ -19,9 +19,20 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// CORS Middleware
+// CORS Middleware - MUST be before all routes
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://crypto-talks.web.app');
+  const allowedOrigins = [
+    'https://crypto-talks.web.app',
+    'https://crypto-talks.firebaseapp.com',
+    'http://localhost:3000',
+    'http://localhost:5000'
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
